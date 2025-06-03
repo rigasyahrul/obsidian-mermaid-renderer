@@ -21,7 +21,7 @@ A plugin that renders Mermaid.js diagrams from `mermaidjs` code blocks in Obsidi
 
 ### Manual Installation
 1. Download the latest release from GitHub
-2. Extract the files to `YourVault/.obsidian/plugins/custom-mermaid/`
+2. Extract the files to `YourVault/.obsidian/plugins/obsidian-mermaid-renderer/`
 3. Enable the plugin in Obsidian settings
 
 ## Usage
@@ -80,14 +80,6 @@ sequenceDiagram
     Bob-->>John: Jolly good!
 ```
 ````
-
-## Configuration
-
-The plugin automatically adapts to your Obsidian theme and uses:
-- **Light theme**: Default Mermaid theme
-- **Dark theme**: Dark Mermaid theme
-- **Font**: Uses your Obsidian interface font
-- **Responsive**: Automatically scales to fit container
 
 ## Troubleshooting
 
