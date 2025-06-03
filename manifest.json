@@ -1,6 +1,6 @@
 {
   "id": "mermaidjs-renderer",
-  "name": "Mermaid JS Renderer",
+  "name": "MermaidJS Renderer",
   "version": "1.0.0",
   "minAppVersion": "1.0.0",
   "description": "Render Mermaid diagrams from mermaidjs code blocks.",
