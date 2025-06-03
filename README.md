@@ -145,6 +145,4 @@ This plugin is licensed under the MIT License. See [LICENSE](LICENSE) for detail
 ### 1.0.0
 - Initial release
 - Support for all major Mermaid diagram types
-- Dark/light theme integration
-- Responsive design
-- Error handling and validation
+- Using mermaidjs version 11.0.0
