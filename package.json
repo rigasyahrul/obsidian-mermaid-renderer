@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-mermaid-renderer",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Render Mermaid diagrams from mermaidjs code blocks in Obsidian",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -12,8 +12,8 @@
 		"node": "22.11.0",
 		"npm": "10.0.0"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["obsidian", "plugin", "mermaid", "diagrams", "markdown"],
+	"author": "Syahriga Syahrul",
 	"license": "MIT",
 	"dependencies": {
 		"mermaid": "^11.0.0"

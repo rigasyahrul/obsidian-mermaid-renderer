@@ -5,7 +5,7 @@ export default class MermaidRenderer extends Plugin {
 	private mermaidInitialized = false;
 
 	async onload() {
-		console.log("Loading MermaidRenderer Plugin");
+
 
 		// Initialize Mermaid
 		await this.initializeMermaid();
@@ -44,9 +44,8 @@ export default class MermaidRenderer extends Plugin {
 			});
 
 			this.mermaidInitialized = true;
-			console.log("Mermaid initialized successfully");
 		} catch (error) {
-			console.error("Failed to initialize Mermaid:", error);
+
 		}
 	}
 
@@ -90,14 +89,23 @@ export default class MermaidRenderer extends Plugin {
 
 			// Render the diagram
 			const { svg } = await mermaid.render(id, cleanSource);
-			container.innerHTML = svg;
+			
+			// Create a temporary div to parse the SVG safely
+			const tempDiv = document.createElement('div');
+			tempDiv.innerHTML = svg;
+			const svgElement = tempDiv.querySelector('svg');
+			
+			if (svgElement) {
+				container.appendChild(svgElement);
+			} else {
+				throw new Error("Failed to render SVG element");
+			}
 
 			// Add some styling
 			container.style.textAlign = "center";
 			container.style.margin = "1em 0";
 
 			// Make SVG responsive
-			const svgElement = container.querySelector("svg");
 			if (svgElement) {
 				svgElement.style.maxWidth = "100%";
 				svgElement.style.height = "auto";
@@ -106,7 +114,6 @@ export default class MermaidRenderer extends Plugin {
 			// Optional: Add export functionality
 			this.addExportFunctionality(container, id, ctx);
 		} catch (error) {
-			console.error("Mermaid rendering error:", error);
 
 			// Show error with original source
 			const errorContainer = el.createEl("div", {
@@ -280,9 +287,7 @@ ${svgString}`;
 
 			// Show success message
 			new Notice(`SVG exported as ${fileName}`);
-			console.log("SVG exported successfully to:", filePath);
 		} catch (error) {
-			console.error("Failed to export SVG:", error);
 			new Notice("Failed to export SVG: " + error.message);
 		}
 	}
@@ -368,10 +373,6 @@ ${svgString}`;
 								);
 
 								new Notice(`PNG exported as ${fileName}`);
-								console.log(
-									"PNG exported successfully to:",
-									filePath,
-								);
 								resolve();
 							},
 							"image/png",
@@ -389,12 +390,20 @@ ${svgString}`;
 				img.src = svgDataUri;
 			});
 		} catch (error) {
-			console.error("Failed to export PNG:", error);
 			new Notice("Failed to export PNG: " + error.message);
 		}
 	}
 
 	onunload() {
-		console.log("Unloading MermaidRenderer Plugin");
+		// Clean up resources
+		this.mermaidInitialized = false;
+		
+		// Remove any remaining export menus
+		const exportMenus = document.querySelectorAll('.mermaid-export-menu');
+		exportMenus.forEach(menu => menu.remove());
+		
+		// Remove any remaining export buttons
+		const exportBtns = document.querySelectorAll('.mermaid-export-btn');
+		exportBtns.forEach(btn => btn.remove());
 	}
 }
