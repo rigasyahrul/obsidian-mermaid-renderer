@@ -5,8 +5,6 @@ export default class MermaidRenderer extends Plugin {
 	private mermaidInitialized = false;
 
 	async onload() {
-
-
 		// Initialize Mermaid
 		await this.initializeMermaid();
 
@@ -23,14 +21,10 @@ export default class MermaidRenderer extends Plugin {
 		if (this.mermaidInitialized) return;
 
 		try {
-			// Initialize Mermaid with custom config
+			// Initialize Mermaid with most basic config for true defaults
 			mermaid.initialize({
 				startOnLoad: false,
-				theme: document.body.classList.contains("theme-dark")
-					? "dark"
-					: "default",
 				securityLevel: "loose",
-				fontFamily: "var(--font-interface)",
 				flowchart: {
 					useMaxWidth: true,
 					htmlLabels: true,
@@ -89,29 +83,23 @@ export default class MermaidRenderer extends Plugin {
 
 			// Render the diagram
 			const { svg } = await mermaid.render(id, cleanSource);
-			
-			// Create a temporary div to parse the SVG safely
-			const tempDiv = document.createElement('div');
-			tempDiv.innerHTML = svg;
-			const svgElement = tempDiv.querySelector('svg');
-			
-			if (svgElement) {
-				container.appendChild(svgElement);
+
+			// Parse SVG safely without innerHTML
+			const parser = new DOMParser();
+			const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
+			const svgElement = svgDoc.documentElement;
+
+			if (svgElement && svgElement.tagName === 'svg') {
+				// Import the SVG node into the current document
+				const importedSvg = document.importNode(svgElement, true);
+				container.appendChild(importedSvg);
 			} else {
 				throw new Error("Failed to render SVG element");
 			}
 
-			// Add some styling
-			container.style.textAlign = "center";
-			container.style.margin = "1em 0";
+			// Container already has mermaid-container class, SVG is styled via CSS
 
-			// Make SVG responsive
-			if (svgElement) {
-				svgElement.style.maxWidth = "100%";
-				svgElement.style.height = "auto";
-			}
-
-			// Optional: Add export functionality
+			// Always add export functionality to every diagram immediately
 			this.addExportFunctionality(container, id, ctx);
 		} catch (error) {
 
@@ -138,38 +126,22 @@ export default class MermaidRenderer extends Plugin {
 		diagramId: string,
 		context: MarkdownPostProcessorContext,
 	) {
+		// Check if export button already exists
+		if (container.querySelector('.mermaid-export-btn')) {
+			return;
+		}
+
 		// Add export button that appears on hover
 		const exportBtn = container.createEl("button", {
 			text: "💾 Export",
 			cls: "mermaid-export-btn",
 		});
 
-		exportBtn.style.cssText = `
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            background: var(--background-primary);
-            border: 1px solid var(--background-modifier-border);
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-size: 12px;
-            cursor: pointer;
-        `;
-
-		container.style.position = "relative";
-
-		container.addEventListener("mouseenter", () => {
-			exportBtn.style.opacity = "1";
-		});
-
-		container.addEventListener("mouseleave", () => {
-			exportBtn.style.opacity = "0";
-		});
+		exportBtn.setAttribute('title', 'Export diagram');
 
 		exportBtn.addEventListener("click", (e) => {
 			e.preventDefault();
+			e.stopPropagation();
 			this.showExportMenu(container, diagramId, context);
 		});
 	}
@@ -179,22 +151,17 @@ export default class MermaidRenderer extends Plugin {
 		diagramId: string,
 		context: MarkdownPostProcessorContext,
 	) {
+		// Remove any existing menu first
+		const existingMenu = container.querySelector('.mermaid-export-menu');
+		if (existingMenu) {
+			existingMenu.remove();
+			return;
+		}
+
 		// Create a simple export menu
 		const menu = container.createEl("div", {
 			cls: "mermaid-export-menu",
 		});
-
-		menu.style.cssText = `
-            position: absolute;
-            top: 30px;
-            right: 5px;
-            background: var(--background-primary);
-            border: 1px solid var(--background-modifier-border);
-            border-radius: 4px;
-            padding: 8px;
-            box-shadow: var(--shadow-s);
-            z-index: 1000;
-        `;
 
 		const svgBtn = menu.createEl("button", {
 			text: "Export as SVG",
@@ -206,35 +173,14 @@ export default class MermaidRenderer extends Plugin {
 			cls: "mermaid-export-option",
 		});
 
-		// Style the buttons
-		[svgBtn, pngBtn].forEach((btn) => {
-			btn.style.cssText = `
-                display: block;
-                width: 100%;
-                padding: 4px 8px;
-                margin: 2px 0;
-                background: transparent;
-                border: none;
-                cursor: pointer;
-                text-align: left;
-                border-radius: 2px;
-            `;
-
-			btn.addEventListener("mouseenter", () => {
-				btn.style.background = "var(--background-modifier-hover)";
-			});
-
-			btn.addEventListener("mouseleave", () => {
-				btn.style.background = "transparent";
-			});
-		});
-
-		svgBtn.addEventListener("click", () => {
+		svgBtn.addEventListener("click", (e) => {
+			e.stopPropagation();
 			this.exportAsSVG(container, diagramId, context);
 			menu.remove();
 		});
 
-		pngBtn.addEventListener("click", async () => {
+		pngBtn.addEventListener("click", async (e) => {
+			e.stopPropagation();
 			await this.exportAsPNG(container, diagramId, context);
 			menu.remove();
 		});
@@ -394,14 +340,16 @@ ${svgString}`;
 		}
 	}
 
+
+
 	onunload() {
 		// Clean up resources
 		this.mermaidInitialized = false;
-		
+
 		// Remove any remaining export menus
 		const exportMenus = document.querySelectorAll('.mermaid-export-menu');
 		exportMenus.forEach(menu => menu.remove());
-		
+
 		// Remove any remaining export buttons
 		const exportBtns = document.querySelectorAll('.mermaid-export-btn');
 		exportBtns.forEach(btn => btn.remove());

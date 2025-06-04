@@ -4,10 +4,6 @@
     margin: 1em 0;
     text-align: center;
     position: relative;
-    background: var(--background-secondary);
-    border-radius: 8px;
-    padding: 16px;
-    overflow: auto;
 }
 
 .mermaid-container svg {
@@ -59,10 +55,7 @@
     background: var(--interactive-accent-hover);
 }
 
-/* Dark theme adjustments */
-.theme-dark .mermaid-container {
-    background: var(--background-primary-alt);
-}
+/* Removed dark theme background override to preserve mermaid defaults */
 
 /* Make mermaid diagrams responsive */
 .mermaid-container .mermaid {
@@ -70,48 +63,57 @@
     max-width: 100%;
 }
 
-/* Style for flowcharts */
-.mermaid-container .flowchart-link {
-    stroke: var(--text-accent);
-}
-
-.mermaid-container .node rect,
-.mermaid-container .node circle,
-.mermaid-container .node polygon {
-    fill: var(--background-primary);
-    stroke: var(--text-accent);
-    stroke-width: 2px;
-}
-
-.mermaid-container .node .label {
+/* Export functionality styles */
+.mermaid-export-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 100;
     color: var(--text-normal);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Sequence diagram styling */
-.mermaid-container .actor {
-    fill: var(--background-primary);
-    stroke: var(--text-accent);
+.mermaid-container:hover .mermaid-export-btn {
+    opacity: 1;
 }
 
-.mermaid-container .messageLine0,
-.mermaid-container .messageLine1 {
-    stroke: var(--text-normal);
+.mermaid-export-btn:hover {
+    background: var(--background-modifier-hover);
 }
 
-.mermaid-container .messageText {
-    fill: var(--text-normal);
+.mermaid-export-menu {
+    position: absolute;
+    top: 28px;
+    right: 4px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 6px;
+    box-shadow: var(--shadow-s);
+    z-index: 1000;
+    min-width: 120px;
 }
 
-/* Gantt chart styling */
-.mermaid-container .grid .tick {
-    stroke: var(--background-modifier-border);
+.mermaid-export-option {
+    display: block;
+    width: 100%;
+    padding: 4px 8px;
+    margin: 2px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 2px;
 }
 
-.mermaid-container .grid path {
-    stroke: var(--background-modifier-border);
-}
-
-.mermaid-container .today {
-    stroke: var(--text-accent);
-    stroke-width: 2px;
+.mermaid-export-option:hover {
+    background: var(--background-modifier-hover);
 }
