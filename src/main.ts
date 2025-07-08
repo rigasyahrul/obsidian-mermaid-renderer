@@ -24,7 +24,7 @@ export default class MermaidRenderer extends Plugin {
 			// Initialize Mermaid with most basic config for true defaults
 			mermaid.initialize({
 				startOnLoad: false,
-				securityLevel: "loose",
+				securityLevel: "strict",
 				flowchart: {
 					useMaxWidth: true,
 					htmlLabels: true,
